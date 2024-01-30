@@ -419,3 +419,44 @@ save_as_sql(
 
 # parse_sql(q1b, dialect="sqlite")
 # %%
+from text2sql.ai_utils import chatbot_SQL_query, clarify_user_request, create_prompt
+from text2sql.sql_utils import get_db_schema
+
+schema = get_db_schema(db_uri)
+print("raw prompt from user request")
+print(f"up1:\n{create_prompt(up1, schema)}")
+print(f"up1b:\n{create_prompt(up1b, schema)}")
+print(f"up2:\n{create_prompt(up2, schema)}")
+print(f"up3:\n{create_prompt(up3, schema)}")
+print(f"up4:\n{create_prompt(up4, schema)}")
+print(f"up4b:\n{create_prompt(up4b, schema)}")
+print(f"up5:\n{create_prompt(up5, schema)}")
+print(f"up5b:\n{create_prompt(up5b, schema)}")
+# %%
+from text2sql.ai_utils import chatbot_SQL_query, clarify_user_request, create_prompt
+from text2sql.sql_utils import get_db_schema
+
+schema = get_db_schema(db_uri)
+print("raw prompt from user request")
+print(f"up1:\n{clarify_user_request(up1, schema)}")
+print(f"up1b:\n{clarify_user_request(up1b, schema)}")
+print(f"up2:\n{clarify_user_request(up2, schema)}")
+print(f"up3:\n{clarify_user_request(up3, schema)}")
+print(f"up4:\n{clarify_user_request(up4, schema)}")
+print(f"up4b:\n{clarify_user_request(up4b, schema)}")
+print(f"up5:\n{clarify_user_request(up5, schema)}")
+print(f"up5b:\n{clarify_user_request(up5b, schema)}")
+#%%
+from text2sql.ai_utils import chatbot_SQL_query, clarify_user_request, create_prompt
+from text2sql.sql_utils import get_db_schema
+
+schema = get_db_schema(db_uri)
+print("raw prompt from user request")
+print(f"up1:\n{chatbot_SQL_query(up1, schema)}")
+print(f"up1b:\n{chatbot_SQL_query(up1b, schema)}")
+print(f"up2:\n{chatbot_SQL_query(up2, schema)}")
+print(f"up3:\n{chatbot_SQL_query(up3, schema)}")
+print(f"up4:\n{chatbot_SQL_query(up4, schema)}")
+print(f"up4b:\n{chatbot_SQL_query(up4b, schema)}")
+print(f"up5:\n{chatbot_SQL_query(up5, schema)}")
+print(f"up5b:\n{chatbot_SQL_query(up5b, schema)}")
