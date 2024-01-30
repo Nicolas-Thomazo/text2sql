@@ -247,6 +247,52 @@ HAVING value_of_orders <= (
 ORDER BY value_of_orders
 """
 
+## Le nombre total de clients dans chaque ville et état
+q6 = """
+SELECT city, state, COUNT(customer_id) AS total_customers
+FROM customers
+GROUP BY city, state;
+"""
+## Le total des ventes pour chaque catégorie de produit par année.
+q7 = """
+SELECT c.category_name, strftime('%Y', o.order_date) AS year, SUM(oi.quantity * oi.list_price) AS total_sales
+FROM order_items oi
+JOIN orders o ON oi.order_id = o.order_id
+JOIN products p ON oi.product_id = p.product_id
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name, year;
+"""
+
+## Le nombre moyen de produits par commande
+q8 = """
+SELECT c.category_name, COUNT(DISTINCT oi.order_id) AS number_of_orders
+FROM order_items oi
+JOIN products p ON oi.product_id = p.product_id
+JOIN categories c ON p.category_id = c.category_id
+GROUP BY c.category_name;
+"""
+
+## La quantité totale de produits vendus par chaque employé dans chaque magasin.
+q9 = """
+SELECT s.store_name, SUM(oi.quantity) AS total_products_sold
+FROM order_items oi
+JOIN orders o ON oi.order_id = o.order_id
+JOIN staffs st ON o.staff_id = st.staff_id
+JOIN stores s ON st.store_id = s.store_id
+GROUP BY s.store_name
+"""
+
+## Calculez le total des ventes pour chaque marque dans chaque magasin.
+q10 = """
+SELECT b.brand_name, s.store_name, SUM(oi.quantity * (oi.list_price - oi.discount)) AS total_sales
+FROM order_items oi
+JOIN orders o ON oi.order_id = o.order_id
+JOIN products p ON oi.product_id = p.product_id
+JOIN brands b ON p.brand_id = b.brand_id
+JOIN stores s ON o.store_id = s.store_id
+GROUP BY b.brand_name, s.store_name;
+"""
+
 # %% making the dataframes
 df1 = pl.read_database_uri(query=q1, uri=db_uri).with_columns(
     pl.col(["store_name", "category_name"]).cast(pl.Categorical)
@@ -272,6 +318,11 @@ df5 = pl.read_database_uri(query=q5, uri=db_uri).with_columns(
 df5b = pl.read_database_uri(query=q5b, uri=db_uri).with_columns(
     pl.col(["staff_id"]).cast(pl.String).cast(pl.Categorical)
 )
+df6 = pl.read_database_uri(query=q6, uri=db_uri)
+df7 = pl.read_database_uri(query=q7, uri=db_uri)
+df8 = pl.read_database_uri(query=q8, uri=db_uri)
+df9 = pl.read_database_uri(query=q9, uri=db_uri)
+df10 = pl.read_database_uri(query=q10, uri=db_uri)
 
 # %% display data
 print(df1)
