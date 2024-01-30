@@ -220,7 +220,7 @@ HAVING value_of_orders <= (
     )
 ORDER BY value_of_orders DESC
 """
-up5 = """les vendeurs qui ont le moins vendu en nombre par magasin et par mois"""
+up5b = """les vendeurs qui ont le moins vendu en nombre par magasin et par mois"""
 q5b = """
 SELECT
     staffs.staff_id,
@@ -251,58 +251,114 @@ HAVING value_of_orders <= (
 ORDER BY value_of_orders
 """
 
-## Le nombre total de clients dans chaque ville et état
+up6 = """Nombre d'articles par commande"""
 q6 = """
-SELECT city, state, COUNT(customer_id) AS total_customers
-FROM customers
-GROUP BY city, state;
+SELECT 
+    order_id,
+    SUM(quantity)
+FROM order_items
+GROUP BY order_id
+ORDER BY order_id
 """
-## Le total des ventes pour chaque catégorie de produit par année.
+
+up7="""Nombre moyen d'articles par commande"""
 q7 = """
-SELECT c.category_name, strftime('%Y', o.order_date) AS year, SUM(oi.quantity * oi.list_price) AS total_sales
-FROM order_items oi
-JOIN orders o ON oi.order_id = o.order_id
-JOIN products p ON oi.product_id = p.product_id
-JOIN categories c ON p.category_id = c.category_id
-GROUP BY c.category_name, year;
+SELECT
+    AVG(q)
+FROM (
+    SELECT 
+        order_id,
+        SUM(quantity) AS q
+    FROM order_items
+    GROUP BY order_id
+)
 """
 
-## Le nombre moyen de produits par commande
+up8="""Prix par commande"""
 q8 = """
-SELECT c.category_name, COUNT(DISTINCT oi.order_id) AS number_of_orders
-FROM order_items oi
-JOIN products p ON oi.product_id = p.product_id
-JOIN categories c ON p.category_id = c.category_id
-GROUP BY c.category_name;
+SELECT 
+    order_id,
+    SUM(quantity*list_price)
+FROM order_items
+GROUP BY order_id
+ORDER BY order_id
 """
 
-## La quantité totale de produits vendus par chaque employé dans chaque magasin.
+up9="""Prix moyen d'une commande"""
 q9 = """
-SELECT s.store_name, SUM(oi.quantity) AS total_products_sold
-FROM order_items oi
-JOIN orders o ON oi.order_id = o.order_id
-JOIN staffs st ON o.staff_id = st.staff_id
-JOIN stores s ON st.store_id = s.store_id
-GROUP BY s.store_name
+SELECT
+    AVG(p)
+FROM (
+    SELECT 
+        order_id,
+        SUM(quantity*list_price) AS p
+    FROM order_items
+    GROUP BY order_id
+)
 """
 
-## Calculez le total des ventes pour chaque marque dans chaque magasin.
+up10="""Nombre de commande réalisé par client"""
 q10 = """
-SELECT b.brand_name, s.store_name, SUM(oi.quantity * (oi.list_price - oi.discount)) AS total_sales
-FROM order_items oi
-JOIN orders o ON oi.order_id = o.order_id
-JOIN products p ON oi.product_id = p.product_id
-JOIN brands b ON p.brand_id = b.brand_id
-JOIN stores s ON o.store_id = s.store_id
-GROUP BY b.brand_name, s.store_name;
+SELECT
+    customers.first_name,
+    customers.last_name,
+    COUNT(orders.order_id)
+FROM customers
+LEFT JOIN orders ON customers.customer_id = orders.customer_id
+GROUP BY customers.customer_id
 """
 
-# Le nombre total de commandes pour chaque statut de commande dans chaque magasin
+up11="""Argent dépensé par client"""
 q11 = """
-SELECT s.store_name, o.order_status, COUNT(o.order_id) AS total_orders
-FROM orders o
-JOIN stores s ON o.store_id = s.store_id
-GROUP BY s.store_name, o.order_status;"""
+SELECT
+    customers.first_name,
+    customers.last_name,
+    SUM(o.p)
+FROM customers
+LEFT JOIN orders ON customers.customer_id = orders.customer_id
+LEFT JOIN (
+    SELECT 
+        order_id,
+        SUM(quantity*list_price) as p
+    FROM order_items
+    GROUP BY order_id
+) AS o
+ON orders.order_id = o.order_id
+GROUP BY customers.customer_id
+"""
+
+up12="""Argent dépensé en moyenne par client actif par le mois """
+q12 = """
+SELECT
+    STRFTIME('%m', orders.order_date) AS month,
+    AVG(p)
+FROM customers
+LEFT JOIN orders ON customers.customer_id = orders.customer_id
+LEFT JOIN (
+    SELECT 
+        order_id,
+        SUM(quantity*list_price) as p
+    FROM order_items
+    GROUP BY order_id
+) AS o
+ON orders.order_id = o.order_id
+GROUP BY month
+ORDER BY month
+"""
+
+up13="""Nombre de client par ville"""
+q13 = """
+SELECT COUNT(*) number_of_customers,
+ city,
+ state
+FROM 
+	customers
+GROUP BY 
+	city
+ORDER BY 
+	number_of_customers DESC;"""
+
+
 # %% making the dataframes
 df1 = pl.read_database_uri(query=q1, uri=db_uri).with_columns(
     pl.col(["store_name", "category_name"]).cast(pl.Categorical)
@@ -333,7 +389,9 @@ df7 = pl.read_database_uri(query=q7, uri=db_uri)
 df8 = pl.read_database_uri(query=q8, uri=db_uri)
 df9 = pl.read_database_uri(query=q9, uri=db_uri)
 df10 = pl.read_database_uri(query=q10, uri=db_uri)
-df10 = pl.read_database_uri(query=q11, uri=db_uri)
+df11 = pl.read_database_uri(query=q11, uri=db_uri)
+df12 = pl.read_database_uri(query=q12, uri=db_uri)
+df13 = pl.read_database_uri(query=q13, uri=db_uri)
 
 # %% display data
 print(df1)
@@ -343,6 +401,14 @@ print(df4)
 print(df5)
 print(df4b)
 print(df5b)
+print(df6)
+print(df7)
+print(df8)
+print(df9)
+print(df10)
+print(df11)
+print(df12)
+print(df13)
 
 # %% graph1
 px.bar(
@@ -407,6 +473,14 @@ print(format(q4, reindent=True, keyword_case="upper"))
 print(format(q5, reindent=True, keyword_case="upper"))
 print(format(q4b, reindent=True, keyword_case="upper"))
 print(format(q5b, reindent=True, keyword_case="upper"))
+print(format(q6, reindent=True, keyword_case="upper"))
+print(format(q7, reindent=True, keyword_case="upper"))
+print(format(q8, reindent=True, keyword_case="upper"))
+print(format(q9, reindent=True, keyword_case="upper"))
+print(format(q10, reindent=True, keyword_case="upper"))
+print(format(q11, reindent=True, keyword_case="upper"))
+print(format(q12, reindent=True, keyword_case="upper"))
+print(format(q13, reindent=True, keyword_case="upper"))
 # %% optimize queries with sqlglot
 # print(optimize_query(q1))
 # print(optimize_query(q1b))
@@ -466,6 +540,54 @@ save_as_sql(
     folder=sql_queries_path,
     overwrite=True,
 )
+save_as_sql(
+    query=optimize_query(q6),
+    file_name="query6.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
+save_as_sql(
+    query=optimize_query(q7),
+    file_name="query7.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
+save_as_sql(
+    query=optimize_query(q8),
+    file_name="query8.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
+save_as_sql(
+    query=optimize_query(q9),
+    file_name="query9.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
+save_as_sql(
+    query=optimize_query(q10),
+    file_name="query10.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
+save_as_sql(
+    query=optimize_query(q11),
+    file_name="query11.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
+save_as_sql(
+    query=optimize_query(q12),
+    file_name="query12.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
+save_as_sql(
+    query=optimize_query(q13),
+    file_name="query13.sql",
+    folder=sql_queries_path,
+    overwrite=True,
+)
 # %% parsing examples
 # from sqlglot import parse_one
 
@@ -490,6 +612,14 @@ print(f"up4:\n{create_prompt(up4, schema)}")
 print(f"up4b:\n{create_prompt(up4b, schema)}")
 print(f"up5:\n{create_prompt(up5, schema)}")
 print(f"up5b:\n{create_prompt(up5b, schema)}")
+print(f"up6:\n{create_prompt(up6, schema)}")
+print(f"up7:\n{create_prompt(up7, schema)}")
+print(f"up8:\n{create_prompt(up8, schema)}")
+print(f"up9:\n{create_prompt(up9, schema)}")
+print(f"up10:\n{create_prompt(up10, schema)}")
+print(f"up11:\n{create_prompt(up11, schema)}")
+print(f"up12:\n{create_prompt(up12, schema)}")
+print(f"up13:\n{create_prompt(up13, schema)}")
 # %%
 from text2sql.ai_utils import chatbot_SQL_query, clarify_user_request, create_prompt
 from text2sql.sql_utils import get_db_schema
@@ -504,7 +634,15 @@ print(f"up4:\n{clarify_user_request(up4, schema)}")
 print(f"up4b:\n{clarify_user_request(up4b, schema)}")
 print(f"up5:\n{clarify_user_request(up5, schema)}")
 print(f"up5b:\n{clarify_user_request(up5b, schema)}")
-# %%
+print(f"up6:\n{clarify_user_request(up6, schema)}")
+print(f"up7:\n{clarify_user_request(up7, schema)}")
+print(f"up8:\n{clarify_user_request(up8, schema)}")
+print(f"up9:\n{clarify_user_request(up9, schema)}")
+print(f"up10:\n{clarify_user_request(up10, schema)}")
+print(f"up11:\n{clarify_user_request(up11, schema)}")
+print(f"up12:\n{clarify_user_request(up12, schema)}")
+print(f"up13:\n{clarify_user_request(up13, schema)}")
+#%%
 from text2sql.ai_utils import chatbot_SQL_query, clarify_user_request, create_prompt
 from text2sql.sql_utils import get_db_schema
 
@@ -518,3 +656,11 @@ print(f"up4:\n{chatbot_SQL_query(up4, schema)}")
 print(f"up4b:\n{chatbot_SQL_query(up4b, schema)}")
 print(f"up5:\n{chatbot_SQL_query(up5, schema)}")
 print(f"up5b:\n{chatbot_SQL_query(up5b, schema)}")
+print(f"up6:\n{chatbot_SQL_query(up6, schema)}")
+print(f"up7:\n{chatbot_SQL_query(up7, schema)}")
+print(f"up8:\n{chatbot_SQL_query(up8, schema)}")
+print(f"up9:\n{chatbot_SQL_query(up9, schema)}")
+print(f"up10:\n{chatbot_SQL_query(up10, schema)}")
+print(f"up11:\n{chatbot_SQL_query(up11, schema)}")
+print(f"up12:\n{chatbot_SQL_query(up12, schema)}")
+print(f"up13:\n{chatbot_SQL_query(up13, schema)}")
