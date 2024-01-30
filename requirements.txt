@@ -1,0 +1,16 @@
+polars
+fastapi
+starlette
+python-dotenv
+pydantic
+sqlalchemy
+adbc-driver-sqlite
+pyarrow
+connectorx==0.3.2a2
+plotly
+pandas
+nbformat
+sqlparse
+sqloxide
+sqlglot
+langchain

@@ -1,0 +1,37 @@
+{
+    //Color of side and top bar
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#B9C6AE",
+        "activityBar.background": "#B9C6AE",
+        "menu.background": "#B9C6AE",
+        "activityBar.activeBackground": "#B9C6AE"
+    },
+    //formatting
+    "editor.formatOnSave": true,
+    "files.autoSave": "afterDelay",
+    "editor.linkedEditing": true,
+    //Location of side bar to avoid jump in code when opening and closing it
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.tabCloseButton": "right",
+    "workbench.editor.tabSizing": "shrink",
+    "workbench.panel.defaultLocation": "right",
+    "workbench.settings.editor": "json",
+    "workbench.sideBar.location": "right",
+    //When scrolling in coding markdown windows, scroll also in priew ctrl+shift+v to get preview
+    "markdown.preview.scrollEditorWithPreview": true,
+    "markdown.preview.scrollPreviewWithEditor": true,
+    "editor.cursorBlinking": "phase",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "esbonio.sphinx.confDir": "",
+    "python.analysis.extraPaths": [
+        "./src",
+        "./src"
+    ],
+    "files.insertFinalNewline": true,
+    //"files.trimFinalNewlines": true
+    "files.trimTrailingWhitespace": true,
+}

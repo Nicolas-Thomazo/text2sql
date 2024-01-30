@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "text2sql"
+version = "0.1.0"
+authors = [
+    { name = "Guillaume Lombardo", email = "guillaume.lombardo@banque-france.fr" },
+    { name = "Nicolas Thomazo", email = "nicolas.thomazo@banque-france.fr" },
+]
+description = "Prends des requetes en langage naturel et les transforme en requete SQL."
+requires-python = ">=3.11"
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "--cov-report html --cov=src/"
+pythonpath = ["src"]
+
+[tool.coverage.run]
+omit = ["tests/*", "documentation/*"]
+
+
+[tool.coverage.html]
+directory = "cov_html"
+
+
+[tool.black]
+
+[tool.isort]
+profile = "black"

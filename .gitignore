@@ -1,3 +1,10 @@
+AUTHORS.md
+CONTRIBUTING.md
+pipeline.yaml
+pip.conf
+CA.pem
+
+
 # File created using '.gitignore Generator' for Visual Studio Code: https://bit.ly/vscode-gig
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,linux,cuda,data,dotenv,git,inforcms,jupyternotebooks,macos,node,nohup,osx,powershell,putty,python,r,sonarqube,spark,ssh,vim,virtualenv,windows
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,linux,cuda,data,dotenv,git,inforcms,jupyternotebooks,macos,node,nohup,osx,powershell,putty,python,r,sonarqube,spark,ssh,vim,virtualenv,windows

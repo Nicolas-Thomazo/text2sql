@@ -1,0 +1,6 @@
+class UsefulException(Exception):
+    ...
+
+
+class AnotherUsefulException(Exception):
+    ...
