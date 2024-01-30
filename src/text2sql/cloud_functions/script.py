@@ -50,3 +50,24 @@ def create_message(name: str, image_url: str) -> Mapping[str, Any]:
     }
 
     return cards
+
+# #%%
+# import vertexai
+# from vertexai.language_models import TextGenerationModel
+
+# vertexai.init(project="qwiklabs-gcp-04-c9a24bfdfa64", location="us-central1")
+# parameters = {
+#     "candidate_count": 1,
+#     "max_output_tokens": 1024,
+#     "temperature": 0.9,
+#     "top_p": 1
+# }
+# model = TextGenerationModel.from_pretrained("text-bison")
+# response = model.predict(
+#     """the color of the sky is
+# """,
+#     **parameters
+# )
+# print(f"Response from Model: {response.text}")
+
+# # %%
