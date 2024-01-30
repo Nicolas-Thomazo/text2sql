@@ -297,6 +297,12 @@ JOIN stores s ON o.store_id = s.store_id
 GROUP BY b.brand_name, s.store_name;
 """
 
+# Le nombre total de commandes pour chaque statut de commande dans chaque magasin
+q11 = """
+SELECT s.store_name, o.order_status, COUNT(o.order_id) AS total_orders
+FROM orders o
+JOIN stores s ON o.store_id = s.store_id
+GROUP BY s.store_name, o.order_status;"""
 # %% making the dataframes
 df1 = pl.read_database_uri(query=q1, uri=db_uri).with_columns(
     pl.col(["store_name", "category_name"]).cast(pl.Categorical)
@@ -327,6 +333,7 @@ df7 = pl.read_database_uri(query=q7, uri=db_uri)
 df8 = pl.read_database_uri(query=q8, uri=db_uri)
 df9 = pl.read_database_uri(query=q9, uri=db_uri)
 df10 = pl.read_database_uri(query=q10, uri=db_uri)
+df10 = pl.read_database_uri(query=q11, uri=db_uri)
 
 # %% display data
 print(df1)
@@ -497,7 +504,7 @@ print(f"up4:\n{clarify_user_request(up4, schema)}")
 print(f"up4b:\n{clarify_user_request(up4b, schema)}")
 print(f"up5:\n{clarify_user_request(up5, schema)}")
 print(f"up5b:\n{clarify_user_request(up5b, schema)}")
-#%%
+# %%
 from text2sql.ai_utils import chatbot_SQL_query, clarify_user_request, create_prompt
 from text2sql.sql_utils import get_db_schema
 
