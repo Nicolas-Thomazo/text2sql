@@ -66,7 +66,9 @@ for file_name in file_names:
     print(pl.read_database_uri(query=query, uri=db_uri))
 
 # %% analyse data (SQL queries)
-## Number of stocks based on category name and store name
+up1 = (
+    """Je veux le stock de chaque produit par magasin ordonné par magasin et produit"""
+)
 q1 = """
 SELECT
     stores.store_name as store_name,
@@ -78,7 +80,7 @@ LEFT JOIN products ON stocks.product_id = products.product_id
 LEFT JOIN categories ON products.category_id = categories.category_id
 GROUP BY stores.store_name, categories.category_name
 """
-## Number of stocks based on category name and store name (make sure each category is representted in each store)
+up1b = """Je veux le stock de chaque produit par magasin ordonné par magasin et produit. pour chaque produit, je veux une ligne meme si le produit n'est pas dans le magasin"""
 q1b = """
 SELECT
     scq.store_name as store_name,
@@ -104,7 +106,7 @@ LEFT JOIN (
 ) AS scq ON sc.store_name = scq.store_name AND sc.category_name = scq.category_name
 ORDER BY sc.store_name, sc.category_name;
 """
-## Number of order items based on category name and store name
+up2 = """Le nombre de commandes par magasin, par produit, ordonné par produit et magasin"""
 q2 = """
 SELECT
     categories.category_name,
@@ -118,7 +120,9 @@ JOIN stores ON orders.store_id = stores.store_id
 GROUP BY stores.store_name, categories.category_name
 ORDER BY categories.category_name, stores.store_name;
 """
-## Total sales by store based on year month
+up3 = (
+    """La valeur totale des ventes par magasin, par mois, ordonné par magasin et mois"""
+)
 q3 = """
 SELECT
     stores.store_name,
@@ -130,7 +134,7 @@ JOIN stores ON orders.store_id = stores.store_id
 GROUP BY stores.store_name, year_month
 ORDER BY store_name, year_month;
 """
-## Staff with the highest number of orders
+up4 = """Les 3 vendeurs qui ont le plus vendu en valeur par magasin et par mois"""
 q4 = """
 SELECT
     staffs.staff_id,
@@ -158,7 +162,7 @@ HAVING number_of_orders >= (
     )
 ORDER BY number_of_orders DESC
 """
-## Staff with the highest number of orders
+up4b = """Les 3 vendeurs qui ont le plus vendu en nombre par magasin et par mois"""
 q4b = """
 SELECT
     staffs.staff_id,
@@ -170,7 +174,7 @@ FROM orders
 LEFT JOIN staffs ON orders.staff_id = staffs.staff_id
 LEFT JOIN stores ON staffs.store_id = stores.store_id
 GROUP BY staffs.staff_id
-HAVING number_of_orders <= (
+HAVING number_of_orders >= (
     SELECT MAX(x)
     FROM (
         SELECT
@@ -186,7 +190,7 @@ HAVING number_of_orders <= (
     )
 ORDER BY number_of_orders
 """
-## Staff with the highest value of orders
+up5 = """les vendeurs qui ont le moins vendu en valeur par magasin et par mois"""
 q5 = """
 SELECT
     staffs.staff_id,
@@ -199,7 +203,7 @@ LEFT JOIN staffs ON orders.staff_id = staffs.staff_id
 LEFT JOIN stores ON staffs.store_id = stores.store_id
 LEFT JOIN order_items ON orders.order_id = order_items.order_id
 GROUP BY staffs.staff_id
-HAVING value_of_orders >= (
+HAVING value_of_orders <= (
     SELECT MIN(x)
     FROM (
         SELECT
@@ -216,7 +220,7 @@ HAVING value_of_orders >= (
     )
 ORDER BY value_of_orders DESC
 """
-## Staff with the highest value of orders
+up5 = """les vendeurs qui ont le moins vendu en nombre par magasin et par mois"""
 q5b = """
 SELECT
     staffs.staff_id,
