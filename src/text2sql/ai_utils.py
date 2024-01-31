@@ -68,6 +68,14 @@ If you need further information or disanbiguation, you ask the user for it.
     ]
 )
 
+SYSTEM_PROMPT = PromptTemplate.from_template("""You are an SQL expert named Paul.
+You work with the sql schema below.
+You take human requests, consider if you have all the information or if you need further information or disanbiguation.
+If you have all the needed information, you answers only with the corresponding sql query.
+If you need further information or disanbiguation, you ask the user for it.
+
+{sql_schema}
+""")
 
 def create_prompt(
     request_in_natural_language: str,

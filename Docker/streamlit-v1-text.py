@@ -17,16 +17,13 @@ parameters = {
     "max_output_tokens": 1024,
     "temperature": 0,
     "top_p": 1,
-    "top_k": 1,
 }
 processed_path = Path("data/processed")
 db_path = processed_path / "bike_store.db"
-# model = TextGenerationModel.from_pretrained("text-bison@002")
+model = TextGenerationModel.from_pretrained("text-bison@002")
 # model = CodeGenerationModel.from_pretrained("code-bison@002")
-model = CodeChatModel.from_pretrained("codechat-bison@latest")
-model_chat = model.start_chat()
+# model = CodeChatModel.from_pretrained("codechat-bison@002")
 schema = get_db_schema(f"sqlite:///{db_path.resolve().as_posix()}")
-model_chat.send_message(SYSTEM_PROMPT.format(sql_schema=schema))
 
 
 def parse_response(dict_response):
@@ -51,7 +48,9 @@ for msg in st.session_state.messages:
 if prompt := st.chat_input():
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-    raw_msg = model_chat.send_message(prompt, **parameters)
+    raw_msg = model.predict(
+        SYSTEM_PROMPT.format(sql_schema=schema) + prompt, **parameters
+    )
     msg = parse_response(raw_msg)
 
     st.session_state.messages.append({"role": "assistant", "content": msg})

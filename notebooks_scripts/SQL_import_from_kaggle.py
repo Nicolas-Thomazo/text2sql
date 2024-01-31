@@ -27,7 +27,7 @@ processed_path = Path("../data/processed")
 sql_queries_path = Path("../data/external")
 db_path = processed_path / "bike_store.db"
 db_uri = f"sqlite:///{db_path.resolve().as_posix()}"
-
+print(db_uri)
 file_names = [
     "brands",
     "categories",

@@ -17,7 +17,6 @@ parameters = {
     "max_output_tokens": 1024,
     "temperature": 0,
     "top_p": 1,
-    "top_k": 1,
 }
 processed_path = Path("data/processed")
 db_path = processed_path / "bike_store.db"
