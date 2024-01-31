@@ -66,9 +66,7 @@ for file_name in file_names:
     print(pl.read_database_uri(query=query, uri=db_uri))
 
 # %% analyse data (SQL queries)
-up1 = (
-    """Je veux le stock de chaque produit par magasin ordonné par magasin et produit"""
-)
+up1 = """Je veux le stock de chaque produit par magasin ordonné par magasin et catégorie"""
 q1 = """
 SELECT
     stores.store_name as store_name,
@@ -80,7 +78,7 @@ LEFT JOIN products ON stocks.product_id = products.product_id
 LEFT JOIN categories ON products.category_id = categories.category_id
 GROUP BY stores.store_name, categories.category_name
 """
-up1b = """Je veux le stock de chaque produit par magasin ordonné par magasin et produit. pour chaque produit, je veux une ligne meme si le produit n'est pas dans le magasin"""
+up1b = """Je veux le stock de chaque produit par magasin ordonné par magasin et catégorie. pour chaque produit, je veux une ligne meme si le produit n'est pas dans le magasin"""
 q1b = """
 SELECT
     scq.store_name as store_name,
@@ -106,7 +104,7 @@ LEFT JOIN (
 ) AS scq ON sc.store_name = scq.store_name AND sc.category_name = scq.category_name
 ORDER BY sc.store_name, sc.category_name;
 """
-up2 = """Le nombre de commandes par magasin, par produit, ordonné par produit et magasin"""
+up2 = """Le nombre de commandes par magasin, par produit, ordonné par catégorie et magasin"""
 q2 = """
 SELECT
     categories.category_name,
@@ -313,7 +311,7 @@ GROUP BY order_id
 ORDER BY order_id
 """
 
-up7="""Nombre moyen d'articles par commande"""
+up7 = """Nombre moyen d'articles par commande"""
 q7 = """
 SELECT
     AVG(q)
@@ -326,7 +324,7 @@ FROM (
 )
 """
 
-up8="""Prix par commande"""
+up8 = """Prix par commande"""
 q8 = """
 SELECT
     order_id,
@@ -336,7 +334,7 @@ GROUP BY order_id
 ORDER BY order_id
 """
 
-up9="""Prix moyen d'une commande"""
+up9 = """Prix moyen d'une commande"""
 q9 = """
 SELECT
     AVG(p)
@@ -349,7 +347,7 @@ FROM (
 )
 """
 
-up10="""Nombre de commande réalisé par client"""
+up10 = """Nombre de commande réalisé par client"""
 q10 = """
 SELECT
     customers.first_name,
@@ -360,7 +358,7 @@ LEFT JOIN orders ON customers.customer_id = orders.customer_id
 GROUP BY customers.customer_id
 """
 
-up11="""Argent dépensé par client"""
+up11 = """Argent dépensé par client"""
 q11 = """
 SELECT
     customers.first_name,
@@ -379,7 +377,7 @@ ON orders.order_id = o.order_id
 GROUP BY customers.customer_id
 """
 
-up12="""Argent dépensé en moyenne par client actif par le mois """
+up12 = """Argent dépensé en moyenne par client actif par le mois """
 q12 = """
 SELECT
     STRFTIME('%m', orders.order_date) AS month,
@@ -398,7 +396,7 @@ GROUP BY month
 ORDER BY month
 """
 
-up13="""Nombre de client par ville"""
+up13 = """Nombre de client par ville"""
 q13 = """
 SELECT COUNT(*) number_of_customers,
  city,
@@ -700,7 +698,7 @@ print(f"up10:\n{clarify_user_request(up10, schema)}")
 print(f"up11:\n{clarify_user_request(up11, schema)}")
 print(f"up12:\n{clarify_user_request(up12, schema)}")
 print(f"up13:\n{clarify_user_request(up13, schema)}")
-#%%
+# %%
 from text2sql.ai_utils import chatbot_SQL_query, clarify_user_request, create_prompt
 from text2sql.sql_utils import get_db_schema
 
