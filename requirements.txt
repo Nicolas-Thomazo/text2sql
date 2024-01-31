@@ -6,7 +6,7 @@ pydantic
 sqlalchemy
 adbc-driver-sqlite
 pyarrow
-connectorx==0.3.2a2
+connectorx
 plotly
 pandas
 nbformat
@@ -14,3 +14,5 @@ sqlparse
 sqloxide
 sqlglot
 langchain
+streamlit
+google-cloud-aiplatform
