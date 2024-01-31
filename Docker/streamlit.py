@@ -10,23 +10,30 @@ from text2sql.sql_utils import get_db_schema
 from text2sql.ai_utils import chatbot_SQL_query, SYSTEM_PROMPT
 from pathlib import Path
 
+from text2sql import logger
+
+st.session_state["chat_started"] = st.session_state.get("chat_started", False)
+
 # Model
 vertexai.init(project="text2sql-412908", location="us-central1")
 parameters = {
-    "candidate_count": 1,
+    # "candidate_count": 1,
     "max_output_tokens": 1024,
     "temperature": 0,
-    "top_p": 1,
-    "top_k": 1,
+    # "top_k": 1,
 }
 processed_path = Path("data/processed")
 db_path = processed_path / "bike_store.db"
+schema = get_db_schema(f"sqlite:///{db_path.resolve().as_posix()}")
 # model = TextGenerationModel.from_pretrained("text-bison@002")
 # model = CodeGenerationModel.from_pretrained("code-bison@002")
-model = CodeChatModel.from_pretrained("codechat-bison@latest")
-model_chat = model.start_chat()
-schema = get_db_schema(f"sqlite:///{db_path.resolve().as_posix()}")
-model_chat.send_message(SYSTEM_PROMPT.format(sql_schema=schema))
+if not st.session_state["chat_started"]:
+    model = CodeChatModel.from_pretrained("codechat-bison@002")
+    logger.info("\n\n\nstart chat\n\n\n")
+    model_chat = model.start_chat(**parameters)
+    model_chat.send_message(SYSTEM_PROMPT.format(sql_schema=schema))
+    st.session_state["chat_started"] = True
+    st.session_state["chat_model"] = model_chat
 
 
 def parse_response(dict_response):
@@ -38,7 +45,6 @@ def parse_response(dict_response):
 st.title("💬 Chatbot")
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
-        # {"role": "system", "content": SYSTEM_PROMPT.format(sql_schema=schema)},
         {
             "role": "assistant",
             "content": "Pour quelle question voulez vous que je génère une requête SQL?",
@@ -49,9 +55,10 @@ for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
 if prompt := st.chat_input():
+    logger.info(f"\n\n\nadd prompt: {prompt}\n\n\n")
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-    raw_msg = model_chat.send_message(prompt, **parameters)
+    raw_msg = st.session_state["chat_model"].send_message(prompt)
     msg = parse_response(raw_msg)
 
     st.session_state.messages.append({"role": "assistant", "content": msg})
